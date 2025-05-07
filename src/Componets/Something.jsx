@@ -18,6 +18,12 @@ export default function Something() {
         startDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
 
+        const lastChecked = localStorage.getItem('lastCheckedDate');
+        if (lastChecked !== todayStr) {
+            alert("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
+            localStorage.setItem('lastCheckedDate', todayStr);
+        }
+
         const diffTime = today.getTime() - startDate.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
