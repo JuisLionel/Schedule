@@ -3,146 +3,141 @@ import React, { useState, useEffect } from 'react';
 
 import { AiOutlineClose } from "react-icons/ai";
 import { AiOutlineCheck } from "react-icons/ai";
+import { IoPauseSharp } from "react-icons/io5";
+import { AiOutlineCaretRight } from "react-icons/ai";
 
 export default function Something() {
     const [turn, setTurn] = useState('');
-    const [isChecked, setIsChecked] = useState(false);
-    const [skipCount, setSkipCount] = useState({ lionel: 0, felix: 0 });
     const [nextTurn, setNextTurn] = useState('');
+    const [isChecked, setIsChecked] = useState(false);
+    const [lionelDishes, setLionelDishes] = useState(0);
+    const [felixDishes, setFelixDishes] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
+    // Load from localStorage on mount
     useEffect(() => {
-        const startDate = new Date('2024-01-01');
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
+        const savedState = JSON.parse(localStorage.getItem('dishScheduleState'));
+        const storedDate = localStorage.getItem('dishCheckedDate');
+        const today = new Date().toISOString().split('T')[0];
 
-        startDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-
-        const lastChecked = localStorage.getItem('lastCheckedDate');
-        if (lastChecked !== todayStr) {
-            // Check for permission to show notifications
-            if (Notification.permission === "granted") {
-                new Notification("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
-                    }
-                });
-            }
-
-            localStorage.setItem('lastCheckedDate', todayStr);
-        }
-
-        const diffTime = today.getTime() - startDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        let scheduledTurn = diffDays % 2 === 0 ? 'Lionel' : 'Felix';
-
-        // Load skip data from localStorage
-        const storedSkip = JSON.parse(localStorage.getItem('skipCount')) || {
-            lionel: 0,
-            felix: 0,
-            lastUpdate: ''
-        };
-
-        // Check if today is a new day
-        if (storedSkip.lastUpdate !== todayStr) {
-            // Apply skip logic only once per day
-            if (scheduledTurn === 'Lionel' && storedSkip.lionel > 0) {
-                storedSkip.lionel -= 1;
-                scheduledTurn = 'Felix';
-            } else if (scheduledTurn === 'Felix' && storedSkip.felix > 0) {
-                storedSkip.felix -= 1;
-                scheduledTurn = 'Lionel';
-            }
-
-            storedSkip.lastUpdate = todayStr;
-            localStorage.setItem('skipCount', JSON.stringify(storedSkip));
+        if (savedState) {
+            setTurn(savedState.turn);
+            setNextTurn(savedState.nextTurn);
+            setLionelDishes(savedState.lionelDishes);
+            setFelixDishes(savedState.felixDishes);
+            setIsPaused(savedState.isPaused);
         } else {
-            // If skip already applied today, just adjust the display
-            if (scheduledTurn === 'Lionel' && storedSkip.lionel > 0) {
-                scheduledTurn = 'Felix';
-            } else if (scheduledTurn === 'Felix' && storedSkip.felix > 0) {
-                scheduledTurn = 'Lionel';
-            }
+            setTurn('Lionel');
+            setNextTurn('Felix');
         }
 
-        setTurn(scheduledTurn);
-        setSkipCount({ lionel: storedSkip.lionel, felix: storedSkip.felix });
-
-        // Load checked status
-        const savedStatus = JSON.parse(localStorage.getItem('dishStatus')) || {};
-        if (savedStatus.date === todayStr && savedStatus.checked) {
-            setIsChecked(true);
+        if (storedDate === today) {
+            const storedIsChecked = localStorage.getItem('dishIsChecked') === 'true';
+            setIsChecked(storedIsChecked);
         } else {
             setIsChecked(false);
         }
 
-        // Set tomorrow's turn
-        const tomorrowDiffDays = diffDays + 1;
-        const tomorrowScheduled = tomorrowDiffDays % 2 === 0 ? 'Lionel' : 'Felix';
-        setNextTurn(tomorrowScheduled);
+        setLoaded(true);
     }, []);
 
-    const GakBisa = () => {
-        const newTurn = turn === 'Lionel' ? 'Felix' : 'Lionel';
-        setTurn(newTurn);
-        setIsChecked(true);
+    // Save to localStorage when values change
+    useEffect(() => {
+        if (!loaded) return;
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        const storedSkip = JSON.parse(localStorage.getItem('skipCount')) || {
-            lionel: 0,
-            felix: 0,
-            lastUpdate: ''
-        };
+        const today = new Date().toISOString().split('T')[0];
+
+        localStorage.setItem('dishScheduleState', JSON.stringify({
+            turn,
+            nextTurn,
+            lionelDishes,
+            felixDishes,
+            isPaused
+        }));
+
+        localStorage.setItem('dishIsChecked', isChecked);
+        localStorage.setItem('dishCheckedDate', today);
+    }, [turn, nextTurn, lionelDishes, felixDishes, isPaused, isChecked, loaded]);
+
+    const GakBisa = () => {
+        if (isPaused) return;
 
         if (turn === 'Lionel') {
-            storedSkip.lionel += 1;
+            setLionelDishes(prev => prev + 1);
+            setTurn('Felix');
+            setNextTurn('Lionel');
         } else {
-            storedSkip.felix += 1;
+            setFelixDishes(prev => prev + 1);
+            setTurn('Lionel');
+            setNextTurn('Felix');
         }
 
-        localStorage.setItem('skipCount', JSON.stringify(storedSkip));
-        setSkipCount({ lionel: storedSkip.lionel, felix: storedSkip.felix });
-
-        // Save checked status
-        localStorage.setItem('dishStatus', JSON.stringify({
-            date: todayStr,
-            checked: true
-        }));
+        setIsChecked(true);
     };
 
     const Bisa = () => {
+        if (isPaused) return;
+
+        if (turn === 'Lionel') {
+            if (lionelDishes > 0) {
+                setLionelDishes(prev => prev - 1);
+            } else {
+                setNextTurn('Felix');
+            }
+        } else {
+            if (felixDishes > 0) {
+                setFelixDishes(prev => prev - 1);
+            } else {
+                setNextTurn('Lionel');
+            }
+        }
+
         setIsChecked(true);
-        const todayStr = new Date().toISOString().split('T')[0];
-        localStorage.setItem('dishStatus', JSON.stringify({
-            date: todayStr,
-            checked: true
-        }));
+    };
+
+
+    const pause = () => {
+        setIsPaused(prev => !prev);
     };
 
     return (
         <div className="container">
             <div className="card">
-                <h1>{turn}</h1>
+                <h1>{isPaused ? '-' : turn}</h1>
             </div>
 
             {!isChecked ? (
                 <div className='Check'>
-                    <h2>Apakah {turn} tidak bisa cuci piring?</h2>
+                    {!isPaused ? (
+                        <>
+                            <h2>Apakah {turn} tidak bisa cuci piring?</h2>
 
-                    <button onClick={GakBisa}>
-                        <AiOutlineClose color="Red" size={18} />
-                    </button>
+                            <button onClick={GakBisa}>
+                                <AiOutlineClose color="Red" size={20} />
+                            </button>
 
-                    <button onClick={Bisa}>
-                        <AiOutlineCheck color="Green" size={18} />
+                            <button onClick={Bisa}>
+                                <AiOutlineCheck color="Green" size={20} />
+                            </button>
+                        </>
+                    ) : (
+                        <h2>Jadwal sedang dijeda</h2>
+                    )}
+
+                    <button onClick={pause}>
+                        {!isPaused ? (<IoPauseSharp color="Orange" size={20} />) : (<AiOutlineCaretRight color="Orange" size={20} />)}
                     </button>
                 </div>
             ) : (
                 <div className='Check'>
-                    <h2>Besok giliran: <strong>{nextTurn}</strong></h2>
+                    <div className='dishes'>
+                        <h2>Besok giliran: <strong>{nextTurn}</strong></h2>
+                        <h2>---------------------------------</h2>
+                        <h2>Total Penalti</h2>
+                        <p>Lionel: {lionelDishes}</p>
+                        <p>Felix: {felixDishes}</p>
+                    </div>
                 </div>
             )}
         </div>
