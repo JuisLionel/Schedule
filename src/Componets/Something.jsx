@@ -20,7 +20,17 @@ export default function Something() {
 
         const lastChecked = localStorage.getItem('lastCheckedDate');
         if (lastChecked !== todayStr) {
-            alert("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
+            // Check for permission to show notifications
+            if (Notification.permission === "granted") {
+                new Notification("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("🔔 Jadwal berganti! Klik untuk melihat siapa yang cuci piring hari ini.");
+                    }
+                });
+            }
+
             localStorage.setItem('lastCheckedDate', todayStr);
         }
 
