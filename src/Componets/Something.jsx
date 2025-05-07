@@ -117,11 +117,11 @@ export default function Something() {
                     <h2>Apakah {turn} tidak bisa cuci piring?</h2>
 
                     <button onClick={GakBisa}>
-                        <AiOutlineClose color="Red" size={16} />
+                        <AiOutlineClose color="Red" size={18} />
                     </button>
 
                     <button onClick={Bisa}>
-                        <AiOutlineCheck color="Green" size={16} />
+                        <AiOutlineCheck color="Green" size={18} />
                     </button>
                 </div>
             ) : (
