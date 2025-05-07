@@ -129,11 +129,6 @@ export default function Something() {
                     <h2>Besok giliran: <strong>{nextTurn}</strong></h2>
                 </div>
             )}
-
-            <div className="footer">
-                <p>Lionel skip: {skipCount.lionel}x</p>
-                <p>Felix skip: {skipCount.felix}x</p>
-            </div>
         </div>
     );
 }
