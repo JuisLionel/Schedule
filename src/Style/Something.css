@@ -1,3 +1,7 @@
+    body {
+        overflow: hidden;
+    }
+    
     .container {
         width: 100%;
         padding: 1rem;
@@ -75,7 +79,7 @@
         font-size: 0.8rem;
         color: #59616e;
     }
-
+    
     /* Responsive design for tablets */
     @media (max-width: 900px) {
         .card {
