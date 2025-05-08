@@ -1,4 +1,7 @@
-    /* Base styles */
+    body{
+        overflow: hidden;
+    }
+
     .container {
         min-height: 100vh;
         width: 100%;
