@@ -32,6 +32,12 @@ export default function Something() {
             if (today !== currentDay) {
                 setCurrentDay(today);
                 localStorage.setItem('savedDay', today);
+    
+                if (Notification.permission === "granted") {
+                    new Notification(" Friendly Reminder", {
+                        body: "Don't forget to fill the data!",
+                    });
+                }
 
                 if (isPaused == false) {
                     setIsContinue(true);
@@ -163,14 +169,14 @@ export default function Something() {
 
             <Tanggal date={currentDay} />
             <div className="card">
-                <h1>{turn}</h1>
+                <h2>{turn.toUpperCase()}</h2>
             </div>
 
             {!isChecked ? (
                 <div className='Check'>
                     {!isPaused ? (
                         <>
-                            <h2>Apakah {turn} tidak bisa cuci piring?</h2>
+                            <h2>Apakah {turn} tidak bisa mencuci piring?</h2>
 
                             <button onClick={GakBisa}>
                                 <IoCloseSharp color="Red" size={25} />
