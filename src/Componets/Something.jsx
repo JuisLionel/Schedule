@@ -132,20 +132,6 @@ export default function Something() {
         setNextTurn(prev => (prev === PEOPLE[0] ? PEOPLE[1] : PEOPLE[0]));
         setIsChecked(true);
 
-        // if (turn === PEOPLE[0]) {
-        //     if (lionelSkip === 0) {
-        //         setLionelSkip(lionelSkip + 1);
-        //     } else {
-        //         setLionelSkip(lionelSkip + 1);
-        //     }
-        // } else {
-        //     if (felixSkip === 0) {
-        //         setFelixSkip(felixSkip + 1);
-        //     } else {
-        //         setFelixSkip(felixSkip + 1);
-        //     }
-        // }
-
         if (turn === PEOPLE[0]) {
             setLionelSkip(lionelSkip + 1);
         } else {

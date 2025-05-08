@@ -1,9 +1,4 @@
-    body{
-        overflow: hidden;
-    }
-
     .container {
-        min-height: 100vh;
         width: 100%;
         padding: 1rem;
 
