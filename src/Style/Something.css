@@ -34,32 +34,19 @@
         box-shadow: rgb(73, 73, 73) 0px 0px 20px 0px ;
         font-size: clamp(1.5rem, 100vw, 100px); 
     }
-
-    /* .card h2 {
-        font-size: clamp(2rem, 10vw, 120px); 
-        font-weight: 900;
-        letter-spacing: 0.05em;
-        margin: 0;
-        background: url('./yeah.jpg') 60% 60%;
-        background-size: cover;
-        -webkit-text-fill-color: transparent;
-        -webkit-background-clip: text;
-    } */
     
-
     .Check {
         display: flex;
         margin-top: 20px;
         gap: 8px;
         flex-wrap: wrap;
         justify-content: center;
-        align-self: center;
-        
+        align-items: center;
         color: white;
     }
 
     .Check button {
-        background-color: #3d348d;
+        background-color: #213448;
         border: none;
         border-radius: 5px;
         width: 40px;

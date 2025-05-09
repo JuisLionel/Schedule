@@ -27,12 +27,21 @@ export default function Something() {
     });
 
     useEffect(() => {
+        const savedDay = localStorage.getItem('savedDay');
+        if (!savedDay) {
+            const today = getToday();
+            localStorage.setItem('savedDay', today);
+            setCurrentDay(today);
+        }
+    }, []);
+
+    useEffect(() => {
         const checkDayChange = () => {
             const today = getToday();
             if (today !== currentDay) {
                 setCurrentDay(today);
                 localStorage.setItem('savedDay', today);
-    
+
                 if (Notification.permission === "granted") {
                     new Notification(" Friendly Reminder", {
                         body: "Don't forget to fill the data!",
@@ -71,7 +80,6 @@ export default function Something() {
             setFelixSkip(felixSkip);
 
         } else {
-
             setTurn(PEOPLE[0]);
             setNextTurn(PEOPLE[1]);
             setIsChecked(false);
@@ -105,7 +113,6 @@ export default function Something() {
                 const storedNextTurn = parsed.nextTurn;
                 const newNextTurn = storedNextTurn === PEOPLE[0] ? PEOPLE[1] : PEOPLE[0];
 
-
                 if (felixSkip > 0) {
                     setTurn(PEOPLE[1]);
                     setNextTurn(PEOPLE[1]);
@@ -118,7 +125,7 @@ export default function Something() {
                     setIsChecked(false);
                     setIsPaused(false);
 
-                } else if (lionelSkip == 0 || felixSkip == 0) {
+                } else if (lionelSkip === 0 || felixSkip === 0) {
                     setTurn(storedNextTurn);
                     setNextTurn(newNextTurn);
                     setIsChecked(false);
@@ -127,7 +134,6 @@ export default function Something() {
             }
 
             setIsContinue(false);
-
         }
     }, [isContinue]);
 
@@ -166,18 +172,17 @@ export default function Something() {
 
     return (
         <div className="container">
-
             <Tanggal date={currentDay} />
             <div className="card">
-                <h2>{turn.toUpperCase()}</h2>
+                <h3>{turn.toUpperCase()}</h3>
             </div>
 
             {!isChecked ? (
                 <div className='Check'>
                     {!isPaused ? (
                         <>
-                            <h2>Apakah {turn} tidak bisa mencuci piring?</h2>
-
+                            <h2>Apakah {turn} bisa mencuci piring?</h2>
+                        
                             <button onClick={GakBisa}>
                                 <IoCloseSharp color="Red" size={25} />
                             </button>
@@ -202,9 +207,16 @@ export default function Something() {
                 <div className='Check'>
                     <div className='dishes'>
                         <h2>Besok giliran: <strong>{nextTurn}</strong></h2>
+                        <h2>---------------------------</h2>
+                        <h3>Lionel Skip: {lionelSkip}</h3>
+                        <h3>Felix Skip: {felixSkip}</h3>
                     </div>
                 </div>
             )}
+
+            {/* <button  onClick={() => {setIsContinue(true)}}>
+                <h2>Continue</h2>
+            </button> */}
         </div>
     );
 }
