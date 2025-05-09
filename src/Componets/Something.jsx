@@ -174,7 +174,7 @@ export default function Something() {
         <div className="container">
             <Tanggal date={currentDay} />
             <div className="card">
-                <h3>{turn.toUpperCase()}</h3>
+                <h2>{turn.toUpperCase()}</h2>
             </div>
 
             {!isChecked ? (

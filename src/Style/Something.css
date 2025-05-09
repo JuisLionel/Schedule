@@ -46,7 +46,7 @@
     }
 
     .Check button {
-        background-color: #213448;
+        background-color: #3d348d;
         border: none;
         border-radius: 5px;
         width: 40px;
@@ -63,6 +63,13 @@
         transform: scale(1.1);
     }
     
+    .dishes {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 5px;
+    }
 
     .Check button:disabled {
         background-color: #1b1d20;
