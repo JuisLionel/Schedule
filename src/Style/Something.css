@@ -37,7 +37,6 @@
     
     .Check {
         display: flex;
-        margin-top: 20px;
         gap: 8px;
         flex-wrap: wrap;
         justify-content: center;
@@ -74,12 +73,6 @@
     .Check button:disabled {
         background-color: #1b1d20;
         cursor: not-allowed;
-    }
-
-    .footer {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 1rem;
     }
 
     .date {

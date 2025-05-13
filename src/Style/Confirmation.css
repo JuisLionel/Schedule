@@ -1,0 +1,74 @@
+.confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.432);
+    position: absolute;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.confirmation .content {
+    background-color: white;
+    width: 90%;
+    max-width: 800px;
+    height: 100%;
+    max-height: 400px;
+    padding: 2rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row; /* Ensure horizontal layout */
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.buttons button {
+    width: 120px;
+    height: 50px;
+    border: none;
+    border-radius: 5px;
+    background-color: #213448;
+    color: white;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.buttons button:hover {
+    opacity: 1;
+}
+
+#y {
+    background-color: #4CAF50;
+}
+
+#n {
+    background-color: #f44336;
+}
+
+/* Optional responsive tweaks */
+@media (max-width: 600px) {
+    .confirmation .content {
+        padding: 1rem;
+    }
+
+    .buttons button {
+        width: 100px;
+        font-size: 0.9rem;
+    }
+}

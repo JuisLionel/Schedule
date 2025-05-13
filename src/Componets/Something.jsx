@@ -1,12 +1,12 @@
 import '../Style/Something.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-import { IoCloseSharp } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa6";
-import { IoPauseSharp } from "react-icons/io5";
-import { AiOutlineCaretRight } from "react-icons/ai";
+import { FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 
-import Tanggal from './Tanggal';
+import Details from './Details';
+import Question from './Question';
+import Confirmation from './Confirmation';
 
 const PEOPLE = ['Lionel', 'Felix'];
 
@@ -19,7 +19,13 @@ export default function Something() {
 
     const [felixSkip, setFelixSkip] = useState(0);
     const [lionelSkip, setLionelSkip] = useState(0);
-    const [isContinue, setIsContinue] = useState(false);
+
+    const [Continue, setContinue] = useState(false);
+    const [isPrevious, setIsPrevious] = useState(false);
+
+    const [isConfirmed, setIsConfirmed] = useState(false);
+    const [ShowConfirm, setShowConfirm] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null); // NEW
 
     const [currentDay, setCurrentDay] = useState(() => {
         const savedDay = localStorage.getItem('savedDay');
@@ -48,15 +54,14 @@ export default function Something() {
                     });
                 }
 
-                if (isPaused == false) {
-                    setIsContinue(true);
+                if (!isPaused) {
+                    setContinue(true);
                 }
             }
         };
 
         checkDayChange();
-
-        const interval = setInterval(checkDayChange, 1 * 1000);
+        const interval = setInterval(checkDayChange, 1000);
         return () => clearInterval(interval);
     }, [currentDay]);
 
@@ -78,7 +83,6 @@ export default function Something() {
             setIsPaused(isPaused);
             setLionelSkip(lionelSkip);
             setFelixSkip(felixSkip);
-
         } else {
             setTurn(PEOPLE[0]);
             setNextTurn(PEOPLE[1]);
@@ -106,7 +110,7 @@ export default function Something() {
     }, [turn, nextTurn, isChecked, isPaused, lionelSkip, felixSkip]);
 
     useEffect(() => {
-        if (isContinue) {
+        if (Continue) {
             const savedData = localStorage.getItem('dishData');
             if (savedData) {
                 const parsed = JSON.parse(savedData);
@@ -116,107 +120,130 @@ export default function Something() {
                 if (felixSkip > 0) {
                     setTurn(PEOPLE[1]);
                     setNextTurn(PEOPLE[1]);
-                    setIsChecked(false);
-                    setIsPaused(false);
-
                 } else if (lionelSkip > 0) {
                     setTurn(PEOPLE[0]);
                     setNextTurn(PEOPLE[0]);
-                    setIsChecked(false);
-                    setIsPaused(false);
-
-                } else if (lionelSkip === 0 || felixSkip === 0) {
+                } else {
                     setTurn(storedNextTurn);
                     setNextTurn(newNextTurn);
-                    setIsChecked(false);
-                    setIsPaused(false);
                 }
+
+                setIsChecked(false);
+                setIsPaused(false);
             }
 
-            setIsContinue(false);
+            setContinue(false);
         }
-    }, [isContinue]);
+    }, [Continue]);
+
+    useEffect(() => {
+        if (isPrevious) {
+            const savedData = localStorage.getItem('dishData');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                const storedTurn = parsed.turn;
+
+                const prevTurn = storedTurn === PEOPLE[0] ? PEOPLE[1] : PEOPLE[0];
+                const prevNextTurn = storedTurn;
+
+                setTurn(prevTurn);
+                setNextTurn(prevNextTurn);
+                setIsChecked(false);
+                setIsPaused(false);
+            }
+
+            setIsPrevious(false);
+        }
+    }, [isPrevious]);
 
     const GakBisa = () => {
         if (isPaused) return;
-
-        setTurn(nextTurn);
-        setNextTurn(prev => (prev === PEOPLE[0] ? PEOPLE[1] : PEOPLE[0]));
-        setIsChecked(true);
-
-        if (turn === PEOPLE[0]) {
-            setLionelSkip(lionelSkip + 1);
-        } else {
-            setFelixSkip(felixSkip + 1);
-        }
+        setPendingAction('GakBisa');
+        setShowConfirm(true);
     };
 
     const Bisa = () => {
         if (isPaused) return;
-
-        setIsChecked(true);
-
-        if (felixSkip > 0) {
-            setFelixSkip(felixSkip - 1);
-        } else if (lionelSkip > 0) {
-            setLionelSkip(lionelSkip - 1);
-        } else {
-            setLionelSkip(0);
-            setFelixSkip(0);
-        }
+        setPendingAction('Bisa');
+        setShowConfirm(true);
     };
 
     const pause = () => {
         setIsPaused(prev => !prev);
     };
 
+    const handleContinue = () => {
+        setContinue(true);
+    };
+
+    const handlePrevious = () => {
+        setIsPrevious(true);
+    };
+
+    const y = () => {
+        if (pendingAction === 'GakBisa') {
+            if (turn === PEOPLE[0]) {
+                setLionelSkip(prev => prev + 1);
+            } else {
+                setFelixSkip(prev => prev + 1);
+            }
+
+            setTurn(nextTurn);
+            setNextTurn(prev => (prev === PEOPLE[0] ? PEOPLE[1] : PEOPLE[0]));
+            setIsChecked(true);
+        }
+
+        if (pendingAction === 'Bisa') {
+            if (turn === PEOPLE[0] && lionelSkip > 0) {
+                setLionelSkip(prev => prev - 1);
+            } else if (turn === PEOPLE[1] && felixSkip > 0) {
+                setFelixSkip(prev => prev - 1);
+            }
+
+            setIsChecked(true);
+        }
+
+        setIsConfirmed(true);
+        setShowConfirm(false);
+        setPendingAction(null);
+    };
+
+    const n = () => {
+        setShowConfirm(false);
+        setIsConfirmed(false);
+        setPendingAction(null);
+    };
+
     return (
-        <div className="container">
-            <Tanggal date={currentDay} />
-            <div className="card">
-                <h2>{turn.toUpperCase()}</h2>
+        <>
+            <div className="container">
+
+                <div className="card">
+                    <h2>{turn.toUpperCase()}</h2>
+                </div>
+
+                {!isChecked ? (
+                    <Question isPaused={isPaused} turn={turn} pause={pause} GakBisa={GakBisa} Bisa={Bisa} />
+                ) : (
+                    <Details nextTurn={nextTurn} lionelSkip={lionelSkip} felixSkip={felixSkip} />
+                )}
+
+                {ShowConfirm && (
+                    <Confirmation y={y} n={n} pendingAction={pendingAction}/>
+                )}
             </div>
 
-            {!isChecked ? (
-                <div className='Check'>
-                    {!isPaused ? (
-                        <>
-                            <h2>Apakah {turn} bisa mencuci piring?</h2>
-                        
-                            <button onClick={GakBisa}>
-                                <IoCloseSharp color="Red" size={25} />
-                            </button>
+            {/* 
+            <div className='continue Check'>
+                <button onClick={handlePrevious}>
+                    <FaArrowLeft color='white' size={20} />
+                </button>
 
-                            <button onClick={Bisa}>
-                                <FaCheck color="Green" size={20} />
-                            </button>
-                        </>
-                    ) : (
-                        <h2>Jadwal sedang dijeda</h2>
-                    )}
-
-                    <button onClick={pause}>
-                        {!isPaused ? (
-                            <IoPauseSharp color="Orange" size={20} />
-                        ) : (
-                            <AiOutlineCaretRight color="Orange" size={20} />
-                        )}
-                    </button>
-                </div>
-            ) : (
-                <div className='Check'>
-                    <div className='dishes'>
-                        <h2>Besok giliran: <strong>{nextTurn}</strong></h2>
-                        <h2>---------------------------</h2>
-                        <h3>Lionel Skip: {lionelSkip}</h3>
-                        <h3>Felix Skip: {felixSkip}</h3>
-                    </div>
-                </div>
-            )}
-
-            {/* <button  onClick={() => {setIsContinue(true)}}>
-                <h2>Continue</h2>
-            </button> */}
-        </div>
+                <button onClick={handleContinue}>
+                    <FaArrowRight color="white" size={20} />
+                </button>
+            </div>
+            */}
+        </>
     );
 }
