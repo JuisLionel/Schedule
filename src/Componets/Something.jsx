@@ -52,7 +52,8 @@ export default function Something() {
                         body: "Don't forget to fill the data!",
                     });
                 }
-                if (isPaused === true) {
+
+                if (isPaused === false) {
                     setContinue(true);
 
                 }
