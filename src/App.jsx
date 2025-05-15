@@ -1,7 +1,7 @@
 import './App.css'
 
 import Something from './Componets/Something'
-import Confirmation from './Componets/Confirmation'
+import Error from './Componets/Error'
 
 function App() {
 

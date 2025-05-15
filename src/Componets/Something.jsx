@@ -6,6 +6,9 @@ import Details from './Details';
 import Question from './Question';
 import Confirmation from './Confirmation';
 import Settings from './Settings';
+import Error from './Error';
+
+import Loading from './Loading';
 
 import { supabase } from './supabaseClient.js';
 
@@ -29,9 +32,16 @@ export default function Something() {
     const [currentDay, setCurrentDay] = useState(getToday());
     const [loading, setLoading] = useState(true);
 
-    // Fetch saved data from Supabase on mount
+    const [errorMessage, setErrorMessage] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
+            if (!navigator.onLine) {
+                setErrorMessage("You are offline. Please check your internet connection.");
+                setLoading(false);
+                return;
+            }
+
             try {
                 const { data, error } = await supabase
                     .from('dish_data')
@@ -40,8 +50,10 @@ export default function Something() {
                     .limit(1)
                     .single();
 
-                if (error && error.code !== 'PGRST116') { // 'PGRST116' means no rows found
-                    console.error('Error fetching data:', error);
+                if (error && error.code !== 'PGRST116') {
+                    setErrorMessage(`Error fetching data`);
+                    setLoading(false);
+                    return;
                 }
 
                 if (data) {
@@ -58,7 +70,17 @@ export default function Something() {
                     setCurrentDay(getToday());
                 }
             } catch (err) {
-                console.error('Unexpected error fetching data:', err);
+                // Detect timeout or network error by error message or name
+                if (
+                    err.message?.includes('timeout') || 
+                    err.message?.includes('NetworkError') ||
+                    err.message?.includes('Failed to fetch') ||
+                    err.message?.includes('net::ERR_CONNECTION_TIMED_OUT')
+                ) {
+                    setErrorMessage("Network timeout or connection issue. Please try again later.");
+                } else {
+                    setErrorMessage(`Unexpected error fetching data: ${err.message || err}`);
+                }
             } finally {
                 setLoading(false);
             }
@@ -67,16 +89,20 @@ export default function Something() {
         fetchData();
     }, []);
 
-    // Save to Supabase whenever state changes
     useEffect(() => {
-        if (!turn || !nextTurn) return; 
+        if (!turn || !nextTurn) return;
+        if (!navigator.onLine) {
+            setErrorMessage("You are offline. Cannot save data.");
+            return;
+        }
+        if (errorMessage) return; // Don't try saving if there's already an error
 
         const saveData = async () => {
             try {
                 const { error } = await supabase
                     .from('dish_data')
                     .upsert({
-                        id: 'singleton', 
+                        id: 'singleton',
                         current_day: currentDay,
                         turn,
                         next_turn: nextTurn,
@@ -88,10 +114,19 @@ export default function Something() {
                     }, { onConflict: ['id'] });
 
                 if (error) {
-                    console.error('Failed to save data:', error);
+                    setErrorMessage(`Error 400: Failed to save data.`);
                 }
             } catch (err) {
-                console.error('Unexpected error saving data:', err);
+                if (
+                    err.message?.includes('timeout') || 
+                    err.message?.includes('NetworkError') ||
+                    err.message?.includes('Failed to fetch') ||
+                    err.message?.includes('net::ERR_CONNECTION_TIMED_OUT')
+                ) {
+                    setErrorMessage("Network timeout or connection issue. Failed to save.");
+                } else {
+                    setErrorMessage(`Unexpected error saving data: ${err.message || err}`);
+                }
             }
         };
 
@@ -107,7 +142,7 @@ export default function Something() {
                 setCurrentDay(today);
 
                 if (Notification.permission === "granted") {
-                    new Notification(" Friendly Reminder", {
+                    new Notification("Friendly Reminder", {
                         body: "Don't forget to fill the data!",
                     });
                 }
@@ -221,12 +256,16 @@ export default function Something() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loading />;
+    }
+
+    if (errorMessage) {
+        return <Error Message={errorMessage} />;
     }
 
     return (
         <>
-            <Settings handlePrevious={handlePrevious} handleContinue={handleContinue} currentDay={currentDay}/>
+            <Settings handlePrevious={handlePrevious} handleContinue={handleContinue} currentDay={currentDay} />
 
             <div className="container">
                 <div className="card">
