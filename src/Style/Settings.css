@@ -1,0 +1,75 @@
+.Buttons {
+    display: flex;
+    gap: 5px;
+    padding: 12px;
+    margin: 5px;
+    position: absolute;
+}
+
+.Buttons button {
+    background-color: #141f2b;
+    border: none;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.Buttons button:not(:disabled):hover {
+    transform: scale(1.1);
+}
+
+.Buttons button:disabled {
+    background-color: #1b1d20;
+    cursor: not-allowed;
+}
+
+.SettingsPanel {
+    display: flex;
+    gap: 5px;
+}
+
+.btn button:hover {
+    transform: scale(1.1);
+}
+
+.SettingsPanel.open {
+    animation: slideFadeIn 0.5s forwards;
+}
+
+.SettingsPanel.close {
+    animation: slideFadeOut 0.5s forwards;
+}
+
+@keyframes slideFadeIn {
+    from {
+        transform: translateX(2%);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+@keyframes slideFadeOut {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    to {
+        transform: translateX(2%);
+        opacity: 1;
+        pointer-events: auto;
+    }
+}

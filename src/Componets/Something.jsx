@@ -1,12 +1,10 @@
 import '../Style/Something.css';
 import { useState, useEffect } from 'react';
 
-import { FaArrowRight } from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
-
 import Details from './Details';
 import Question from './Question';
 import Confirmation from './Confirmation';
+import Settings from './Settings';
 
 const PEOPLE = ['Lionel', 'Felix'];
 
@@ -23,9 +21,8 @@ export default function Something() {
     const [Continue, setContinue] = useState(false);
     const [isPrevious, setIsPrevious] = useState(false);
 
-    const [isConfirmed, setIsConfirmed] = useState(false);
     const [ShowConfirm, setShowConfirm] = useState(false);
-    const [pendingAction, setPendingAction] = useState(null); // NEW
+    const [pendingAction, setPendingAction] = useState(null);
 
     const [currentDay, setCurrentDay] = useState(() => {
         const savedDay = localStorage.getItem('savedDay');
@@ -44,6 +41,8 @@ export default function Something() {
     useEffect(() => {
         const checkDayChange = () => {
             const today = getToday();
+
+
             if (today !== currentDay) {
                 setCurrentDay(today);
                 localStorage.setItem('savedDay', today);
@@ -53,14 +52,15 @@ export default function Something() {
                         body: "Don't forget to fill the data!",
                     });
                 }
-
-                if (!isPaused) {
+                if (isPaused === true) {
                     setContinue(true);
+
                 }
             }
         };
 
         checkDayChange();
+
         const interval = setInterval(checkDayChange, 1000);
         return () => clearInterval(interval);
     }, [currentDay]);
@@ -83,6 +83,7 @@ export default function Something() {
             setIsPaused(isPaused);
             setLionelSkip(lionelSkip);
             setFelixSkip(felixSkip);
+
         } else {
             setTurn(PEOPLE[0]);
             setNextTurn(PEOPLE[1]);
@@ -120,9 +121,11 @@ export default function Something() {
                 if (felixSkip > 0) {
                     setTurn(PEOPLE[1]);
                     setNextTurn(PEOPLE[1]);
+
                 } else if (lionelSkip > 0) {
                     setTurn(PEOPLE[0]);
                     setNextTurn(PEOPLE[0]);
+
                 } else {
                     setTurn(storedNextTurn);
                     setNextTurn(newNextTurn);
@@ -203,21 +206,20 @@ export default function Something() {
             setIsChecked(true);
         }
 
-        setIsConfirmed(true);
         setShowConfirm(false);
         setPendingAction(null);
     };
 
     const n = () => {
         setShowConfirm(false);
-        setIsConfirmed(false);
         setPendingAction(null);
     };
 
     return (
         <>
-            <div className="container">
+            <Settings handlePrevious={handlePrevious} handleContinue={handleContinue}/>
 
+            <div className="container">
                 <div className="card">
                     <h2>{turn.toUpperCase()}</h2>
                 </div>
@@ -229,21 +231,10 @@ export default function Something() {
                 )}
 
                 {ShowConfirm && (
-                    <Confirmation y={y} n={n} pendingAction={pendingAction}/>
+                    <Confirmation y={y} n={n} pendingAction={pendingAction} />
                 )}
             </div>
 
-            {/* 
-            <div className='continue Check'>
-                <button onClick={handlePrevious}>
-                    <FaArrowLeft color='white' size={20} />
-                </button>
-
-                <button onClick={handleContinue}>
-                    <FaArrowRight color="white" size={20} />
-                </button>
-            </div>
-            */}
         </>
     );
 }
