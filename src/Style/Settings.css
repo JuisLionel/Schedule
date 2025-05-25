@@ -1,6 +1,6 @@
 .Buttons {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     padding: 12px;
     margin: 5px;
     position: absolute;
@@ -31,7 +31,13 @@
 
 .SettingsPanel {
     display: flex;
-    gap: 5px;
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    color: white;
+    font-size: 0.8rem;
 }
 
 .btn button:hover {

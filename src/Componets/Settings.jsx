@@ -3,14 +3,12 @@ import { useState } from "react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 
-export default function Settings({ handlePrevious, handleContinue }) {
+export default function Settings({ handlePrevious, handleContinue, currentDay }) {
     const [isPanelOpen, setIsPanelOpen] = useState(false);
 
     const handleGearClick = () => {
         setIsPanelOpen((prev) => !prev);
     };
-
-    console.log(isPanelOpen);
 
     return (
         <>
@@ -27,6 +25,8 @@ export default function Settings({ handlePrevious, handleContinue }) {
                     <button onClick={handleContinue}>
                         <FaArrowRight color="white" size={20} />
                     </button>
+
+                    <h2>{currentDay}</h2>
                 </div>
             </div>
 
