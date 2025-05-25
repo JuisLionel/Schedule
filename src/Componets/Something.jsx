@@ -7,7 +7,7 @@ import Question from './Question';
 import Confirmation from './Confirmation';
 import Settings from './Settings';
 
-import { supabase } from './supabaseClient';
+import { supabase } from './supabaseClient.js';
 
 const PEOPLE = ['Lionel', 'Felix'];
 
