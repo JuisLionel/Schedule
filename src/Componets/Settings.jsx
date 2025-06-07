@@ -15,7 +15,7 @@ export default function Settings({ handlePrevious, handleContinue, currentDay })
         const day = String(date.getDate()).padStart(2, '0');
         const monthName = date.toLocaleString('en-US', { month: 'long' }); 
         const year = date.getFullYear();
-        return `${day}-${monthName}-${year}`;
+        return `${day} ${monthName} ${year}`;
     };
 
     return (
