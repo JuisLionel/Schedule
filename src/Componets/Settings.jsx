@@ -13,9 +13,9 @@ export default function Settings({ handlePrevious, handleContinue, currentDay })
     const formatDate = (isoString) => {
         const date = new Date(isoString);
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const monthName = date.toLocaleString('en-US', { month: 'long' }); 
         const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
+        return `${day}-${monthName}-${year}`;
     };
 
     return (
@@ -28,7 +28,7 @@ export default function Settings({ handlePrevious, handleContinue, currentDay })
                 <div className={`SettingsPanel ${isPanelOpen ? 'close' : 'open'}`}>
                     <button onClick={handlePrevious} className='btn'>
                         <FaArrowLeft color='white' size={20} />
-                    </button >
+                    </button>
 
                     <button onClick={handleContinue}>
                         <FaArrowRight color="white" size={20} />
