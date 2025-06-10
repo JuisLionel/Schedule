@@ -10,6 +10,14 @@ export default function Settings({ handlePrevious, handleContinue, currentDay })
         setIsPanelOpen((prev) => !prev);
     };
 
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
     return (
         <>
             <div className='Buttons'>
@@ -26,11 +34,9 @@ export default function Settings({ handlePrevious, handleContinue, currentDay })
                         <FaArrowRight color="white" size={20} />
                     </button>
 
-                    <h2>{currentDay}</h2>
+                    <h2>{formatDate(currentDay)}</h2>
                 </div>
             </div>
-
-
         </>
     );
 }
