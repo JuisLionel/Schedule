@@ -1,4 +1,4 @@
-<h2>Dishwashing Schedule</h2>
+<h2 align="center">Dishwashing Schedule</h2>
 
 <div align="center">
   Hello everyone! I built this simple app to help me track my dishwashing schedule. <br>
